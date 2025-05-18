@@ -32,7 +32,10 @@ function calculateStdDev(data: number[], mean: number | null = null): number | n
   const dataMean = mean ?? calculateMean(data);
   if (dataMean === null) return null;
   const squaredDiffs = data.map((value) => Math.pow(value - dataMean, 2));
-  const variance = calculateMean(squaredDiffs);
+  // Modified calculation: use N-1 for sample standard deviation if N > 1
+  const variance = data.length > 1
+    ? squaredDiffs.reduce((sum, value) => sum + value, 0) / (data.length - 1)
+    : 0; // Variance is 0 for a single data point
   return variance !== null ? Math.sqrt(variance) : null;
 }
 
@@ -308,7 +311,7 @@ export function calculateAnalysisData(
   const rangeData = rangeValues.map((range, i) => ({ x: i + 1, y: range }));
 
   // Calculate within subgroup standard deviation
-  const withinStdDev = sampleSize === 1 || constants.d2 === 0 ? stdDev : avgRange / constants.d2;
+  const withinStdDev =  avgRange / constants.d2;
 
   // Prevent division by zero
   const safeWithinStdDev = withinStdDev < 0.0001 ? 0.0001 : withinStdDev;
