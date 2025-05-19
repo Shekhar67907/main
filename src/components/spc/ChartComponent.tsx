@@ -90,10 +90,9 @@ export function ControlCharts({ chartData }: { chartData: ControlChartData }) {
     </motion.div>
   );
 }
-
 export function Histogram({ data, stats, lsl, usl }: {
   data: Array<{x: number; y: number}>;
-  stats: {mean: number; stdDev: number; target: number};
+  stats: {mean: number; stdDev: number; target: number; ucl: number; lcl: number};
   lsl: number;
   usl: number;
 }) {
@@ -109,21 +108,78 @@ export function Histogram({ data, stats, lsl, usl }: {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="x" label={{ value: 'Value', position: 'insideBottomRight', offset: -5 }} />
-                <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
+                <XAxis 
+                  dataKey="x" 
+                  label={{ value: 'Value', position: 'insideBottomRight', offset: -5 }} 
+                />
+                <YAxis 
+                  label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} 
+                />
                 <Tooltip />
-                <ReferenceLine x={lsl} stroke="red" label="LSL" />
-                <ReferenceLine x={usl} stroke="red" label="USL" />
-                <ReferenceLine x={stats.target} stroke="green" label="Target" />
-                <Bar dataKey="y" fill="#8884d8" />
+                {/* Specification Limits */}
+                <ReferenceLine x={lsl} stroke="red" label={{ value: "LSL", position: "top" }} />
+                <ReferenceLine x={usl} stroke="red" label={{ value: "USL", position: "top" }} />
+                
+                {/* Control Limits */}
+                <ReferenceLine 
+                  x={stats.ucl} 
+                  stroke="#ff8c00" 
+                  strokeDasharray="3 3" 
+                  label={{ value: "UCL", position: "top" }} 
+                />
+                <ReferenceLine 
+                  x={stats.lcl} 
+                  stroke="#ff8c00" 
+                  strokeDasharray="3 3" 
+                  label={{ value: "LCL", position: "top" }} 
+                />
+                
+                {/* Target and Mean */}
+                <ReferenceLine 
+                  x={stats.target} 
+                  stroke="green" 
+                  label={{ value: "Target", position: "top" }} 
+                />
+                <ReferenceLine 
+                  x={stats.mean} 
+                  stroke="blue" 
+                  label={{ value: "Mean", position: "top" }} 
+                />
+                
+                <Bar 
+                  dataKey="y" 
+                  fill="#8884d8"
+                  opacity={0.8}
+                />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+          
+          {/* Legend */}
+          <div className="mt-4 flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-red-500" />
+              <span>Spec Limits (LSL/USL)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-[#ff8c00] border-dashed" />
+              <span>Control Limits (LCL/UCL)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-green-500" />
+              <span>Target</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-blue-500" />
+              <span>Process Mean</span>
+            </div>
           </div>
         </CardContent>
       </Card>
     </motion.div>
   );
 }
+
 
 export function AnalysisCards({ ssAnalysis, processInterpretation }: {
   ssAnalysis: SSAnalysis;
