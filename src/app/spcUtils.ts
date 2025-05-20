@@ -55,7 +55,7 @@ function calculateSubgroupXBar(measurements: number[], sampleSize: number): numb
     // For sample sizes 2-5, group measurements into subgroups
     for (let i = 0; i < measurements.length; i += sampleSize) {
       const subgroup = measurements.slice(i, Math.min(i + sampleSize, measurements.length));
-      if (subgroup.length > 0) {
+      if (subgroup.length > 1) {
         const subgroupAvg = subgroup.reduce((sum, val) => sum + val, 0) / subgroup.length;
         xBarValues.push(subgroupAvg);
       }
